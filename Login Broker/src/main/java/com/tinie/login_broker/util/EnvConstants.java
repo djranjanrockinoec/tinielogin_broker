@@ -12,7 +12,7 @@ import static com.tinie.login_broker.util.Constants.*;
 public class EnvConstants {
     private int sessionExpiryDays;
     private long otpExpirySeconds;
-    private String tokenSecret = "CcdE@t8qS%Q#KJ79cA%$K=$m+!JbpLV#$jp9jvM-XayCuN=cWd+mAUM#xaWgtEsc";
+    private String tokenSecret;
     private String otpGenUrl;
     private String userReadUrl;
 
