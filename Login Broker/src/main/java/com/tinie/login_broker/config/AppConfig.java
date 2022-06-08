@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,8 +42,13 @@ public class AppConfig extends WebSecurityConfigurerAdapter{
     }
 
     @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     @Scope(value = "prototype")
-    public UserReadResponseErrorHandler userReadResponseErrorHandler(int OTP, long OTPExpiry, int sessionExpiry) {
-        return new UserReadResponseErrorHandler(OTP, OTPExpiry, sessionExpiry);
+    public UserReadResponseErrorHandler userReadResponseErrorHandler(int OTP, long OTPExpiry) {
+        return new UserReadResponseErrorHandler(OTP, OTPExpiry);
     }
 }

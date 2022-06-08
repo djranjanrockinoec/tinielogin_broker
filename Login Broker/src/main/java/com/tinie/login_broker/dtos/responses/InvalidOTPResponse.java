@@ -1,18 +1,15 @@
 package com.tinie.login_broker.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class OTPGenResponse {
+public class InvalidOTPResponse {
     @JsonProperty("phonenumber")
     private long phonenumber;
-    @JsonProperty("OTP")
-    private int OTP;
-    @JsonProperty("OTPexpiry")
-    private long OTPExpiry;
-    private String username;
-    private String action;
+    private String message;
 }

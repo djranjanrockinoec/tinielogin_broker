@@ -11,12 +11,10 @@ public class UserReadResponseErrorHandler implements ResponseErrorHandler {
 
     private final int OTP;
     private final long OTPExpiry;
-    private final int sessionExpiry;
 
-    public UserReadResponseErrorHandler(int OTP, long OTPExpiry, int sessionExpiry) {
+    public UserReadResponseErrorHandler(int OTP, long OTPExpiry) {
         this.OTP = OTP;
         this.OTPExpiry = OTPExpiry;
-        this.sessionExpiry = sessionExpiry;
     }
 
     @Override
@@ -38,8 +36,7 @@ public class UserReadResponseErrorHandler implements ResponseErrorHandler {
                     jsonParser.get("action").asText(),
                     jsonParser.get("phonenumber").asLong(),
                     OTP,
-                    OTPExpiry,
-                    sessionExpiry);
+                    OTPExpiry);
         else
             throw new OTPOrReadFailedException("READNOK", jsonParser.get("phonenumber").asLong());
     }
