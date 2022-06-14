@@ -7,15 +7,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 
 import java.io.IOException;
 
-public class UserReadResponseErrorHandler implements ResponseErrorHandler {
-
-    private final int OTP;
-    private final long OTPExpiry;
-
-    public UserReadResponseErrorHandler(int OTP, long OTPExpiry) {
-        this.OTP = OTP;
-        this.OTPExpiry = OTPExpiry;
-    }
+public record UserReadResponseErrorHandler(int OTP, long OTPExpiry) implements ResponseErrorHandler {
 
     @Override
     public boolean hasError(ClientHttpResponse response) throws IOException {
