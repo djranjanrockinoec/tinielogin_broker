@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.6.7'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id "com.microsoft.azure.azurewebapp" version "1.4.0"
 }
 
 group = 'com.tinie'
@@ -39,4 +40,17 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+azurewebapp {
+	subscription = '40b59f57-eba8-4c7e-9a9b-29275fdf4c90'
+	resourceGroup = 'tinieV0eastus2'
+	appName = 'tinieV0loginbroker'
+	pricingTier = 'P1V2'
+	region = 'eastus2'
+	runtime {
+		os = 'linux'
+		webContainer = 'Java SE'
+		javaVersion = 'Java 17'
+	}
 }

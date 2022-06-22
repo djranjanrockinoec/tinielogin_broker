@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -68,14 +69,24 @@ public class AuthService {
 
         var result = new HashMap<String, Object>();
 
-        var otpObject = OTPRestTemplate.getForObject(envConstants.getOtpGenUrl(), OTPObject.class);
+        var otpHeaders = new HttpHeaders();
+        otpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        var request = new HttpEntity<>("""
+                {"phonenumber": %d}
+                """.formatted(phoneNumber), otpHeaders);
+        var otpObject = OTPRestTemplate.postForObject(envConstants.getOtpGenUrl(), request, OTPObject.class);
 
         //send OTP via whatsapp alternate channel
         sendOTPViaWhatsapp(otpObject);
 
         var userReadRestTemplate = beanFactory
                 .getBean(RestTemplate.class, userErrHandlerBean(otpObject.OTP(), envConstants.getOtpExpirySeconds()));
-        var user = userReadRestTemplate.getForObject(envConstants.getUserReadUrl(), UserReadObject.class);
+
+        var readUserUrl = UriComponentsBuilder.fromHttpUrl(envConstants.getUserReadUrl())
+                .queryParam("phonenumber", phoneNumber)
+                .encode()
+                .toUriString();
+        var user = userReadRestTemplate.getForObject(readUserUrl, UserReadObject.class);
 
         var userDetails = userDetailsRepository.getById(phoneNumber);
 
