@@ -6,17 +6,14 @@ import com.tinie.login_broker.domain.UserReadObject;
 import com.tinie.login_broker.exceptions.InvalidOTPException;
 import com.tinie.login_broker.exceptions.OTPResponseErrorHandler;
 import com.tinie.login_broker.exceptions.UserReadResponseErrorHandler;
-import com.tinie.login_broker.exceptions.WhatsappMessagingErrorHandler;
 import com.tinie.login_broker.models.OTPRecords;
 import com.tinie.login_broker.repositories.OTPRecordsRepository;
 import com.tinie.login_broker.repositories.UserDetailsRepository;
-import com.tinie.login_broker.util.Constants;
 import com.tinie.login_broker.util.EnvConstants;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,10 +58,6 @@ public class AuthService {
                 OTPExpiry);
     }
 
-    private WhatsappMessagingErrorHandler whatsappMessagingErrorHandler(long phoneNumber) {
-        return beanFactory.getBean(WhatsappMessagingErrorHandler.class, phoneNumber);
-    }
-
     public Map<String, Object> genOTPReadUser(long phoneNumber) {
 
         var result = new HashMap<String, Object>();
@@ -75,9 +68,6 @@ public class AuthService {
                 {"phonenumber": %d}
                 """.formatted(phoneNumber), otpHeaders);
         var otpObject = OTPRestTemplate.postForObject(envConstants.getOtpGenUrl(), request, OTPObject.class);
-
-        //send OTP via whatsapp alternate channel
-        sendOTPViaWhatsapp(otpObject);
 
         var userReadRestTemplate = beanFactory
                 .getBean(RestTemplate.class, userErrHandlerBean(otpObject.OTP(), envConstants.getOtpExpirySeconds()));
@@ -109,28 +99,6 @@ public class AuthService {
         result.put("action", user.action());
 
         return result;
-    }
-
-    private void sendOTPViaWhatsapp(OTPObject otpObject) {
-        var whatsappRestTemplate = beanFactory
-                .getBean(RestTemplate.class, whatsappMessagingErrorHandler(otpObject.phonenumber()));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(envConstants.getWhatsappAuthKey());
-        var body = Constants.WHATSAPP_REQUEST_BODY.formatted(
-                "+91" + otpObject.phonenumber(),
-                envConstants.getWhatsappTemplateName(),
-                otpObject.OTP()
-        );
-
-        HttpEntity<String> entity = new HttpEntity<>(body, headers);
-
-        whatsappRestTemplate.exchange(
-                envConstants.getWhatsappMessageUrl(),
-                HttpMethod.POST,
-                entity,
-                String.class);
     }
 
     public Map<String, Object> verifyOTP(long phoneNumber, int otp) {
