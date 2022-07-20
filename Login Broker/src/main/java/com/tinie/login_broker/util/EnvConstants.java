@@ -15,9 +15,6 @@ public class EnvConstants {
     private String tokenSecret;
     private String otpGenUrl;
     private String userReadUrl;
-    private String whatsappTemplateName;
-    private String whatsappAuthKey;
-    private String whatsappMessageUrl;
 
     public long getSessionExpiryMillis() {
         return MILLIS_DAY * sessionExpiryDays;

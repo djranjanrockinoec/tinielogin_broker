@@ -2,6 +2,8 @@ package com.tinie.login_broker.exceptions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tinie.login_broker.util.MultiReadHttpResponse;
+import com.tinie.login_broker.util.StreamToStringConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
@@ -18,7 +20,9 @@ public class OTPResponseErrorHandler implements ResponseErrorHandler {
             throws IOException {
 
         var objectMapper = new ObjectMapper();
-        var responseRoot = objectMapper.readTree(httpResponse.getBody());
+        //prevents RestTemplate from throwing on getBody() when status code >=400. Alternative is to use statusCode < 400
+        httpResponse.getStatusCode();
+        var responseRoot = objectMapper.readTree(StreamToStringConverter.toString(httpResponse.getBody()));
 
         log.info("OTP GEN RESPONSE: " + responseRoot);
         var status = (String) responseRoot.get("messagestatus").asText();

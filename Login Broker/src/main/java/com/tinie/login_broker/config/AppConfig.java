@@ -1,7 +1,6 @@
 package com.tinie.login_broker.config;
 
 import com.tinie.login_broker.exceptions.UserReadResponseErrorHandler;
-import com.tinie.login_broker.exceptions.WhatsappMessagingErrorHandler;
 import com.tinie.login_broker.util.HttpSwapResponseInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -57,11 +56,5 @@ public class AppConfig extends WebSecurityConfigurerAdapter{
     @Scope(value = "prototype")
     public UserReadResponseErrorHandler userReadResponseErrorHandler(int OTP, long OTPExpiry) {
         return new UserReadResponseErrorHandler(OTP, OTPExpiry);
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public WhatsappMessagingErrorHandler whatsappMessagingErrorHandler(long phoneNumber) {
-        return new WhatsappMessagingErrorHandler(phoneNumber);
     }
 }
